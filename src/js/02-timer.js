@@ -2,6 +2,7 @@ import flatpickr from 'flatpickr';
 // import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/dark.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { Report } from 'notiflix/build/notiflix-report-aio';
 
 //ссылки на элементы html
 const refs = {
@@ -56,12 +57,18 @@ function notifyFailure(msg) {
   });
 }
 
+//функция оповещения что таймер завершил работу!)
+function successMsg(msg) {
+  Report.success('Success', msg, 'Okay');
+}
+
 //функция стартует timer
 function startTimer() {
   const intervalID = setInterval(() => {
     difference -= 1000;
     if (difference < 0) {
       stopTimer(intervalID);
+      successMsg('Timer stopped successfully !!!))). <br/><br/> Please reload the page.');
       return;
     }
     showTimer(convertMs(difference));
