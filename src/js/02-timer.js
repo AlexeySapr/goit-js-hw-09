@@ -1,14 +1,21 @@
 import flatpickr from 'flatpickr';
 // import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/dark.css';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
-//ссылка на поле ввода даты
-const inputArea = document.querySelector('#datetime-picker');
+//ссылки на элементы html
+const refs = {
+  inputArea: document.querySelector('#datetime-picker'),
+  startBtn: document.querySelector('button[data-start]'),
+  daysField: document.querySelector('span[data-days]'),
+  hoursField: document.querySelector('span[data-hours]'),
+  minutesField: document.querySelector('span[data-minutes]'),
+  secondsField: document.querySelector('span[data-seconds]'),
+};
 
-// let selectedDate = null;
-// const currentDate = Date.now();
-
-// function compareDates(currentDate, selectedDate) {}
+refs.startBtn.disabled = true;
+let isCorrectDate = false;
+let difference = null;
 
 //объект опций для конструктора flatpickr
 const options = {
@@ -17,17 +24,52 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    // console.log('from metod: ', selectedDates[0]);
-    // selectedDate = selectedDates[0];
-    // toLog(selectedDate);
-    const difference = selectedDates[0] - options.defaultDate;
-    console.log('defaultDate: ', difference);
-    console.log('converted: ', convertMs(difference));
+    difference = selectedDates[0] - options.defaultDate;
+    if (difference > 0) {
+      refs.startBtn.disabled = false;
+      isCorrectDate = true;
+    } else {
+      Notify.failure('Please choose a date in the future', {
+        position: 'center-center',
+        timeout: 1000,
+        pauseOnHover: false,
+      });
+    }
   },
 };
 
 //инициализация flatpickr
-flatpickr(inputArea, options);
+flatpickr(refs.inputArea, options);
+
+refs.startBtn.addEventListener('click', onStartBtnClick);
+
+function onStartBtnClick() {
+  console.log('Start timer');
+  startTimer();
+  // const { days, hours, minutes, seconds } = convertMs(difference);
+}
+
+function startTimer() {
+  const intervalID = setInterval(() => {
+    showTimer(convertMs(difference));
+    difference -= 1000;
+    if (difference < 0) {
+      clearInterval(intervalID);
+      console.log('Stop timer');
+    }
+  }, 1000);
+}
+
+function showTimer({ days, hours, minutes, seconds }) {
+  refs.daysField.textContent = days;
+  refs.hoursField.textContent = hours;
+  refs.minutesField.textContent = minutes;
+  refs.secondsField.textContent = seconds;
+}
+
+function pad(value) {
+  return String(value).padStart(2, '0');
+}
 
 /*Для подсчета значений используй готовую функцию convertMs, где ms - разница между конечной и текущей датой в миллисекундах.*/
 function convertMs(ms) {
@@ -38,13 +80,13 @@ function convertMs(ms) {
   const day = hour * 24;
 
   // Remaining days
-  const days = Math.floor(ms / day);
+  const days = pad(Math.floor(ms / day));
   // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
+  const hours = pad(Math.floor((ms % day) / hour));
   // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const minutes = pad(Math.floor(((ms % day) % hour) / minute));
   // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const seconds = pad(Math.floor((((ms % day) % hour) % minute) / second));
 
   return { days, hours, minutes, seconds };
 }
