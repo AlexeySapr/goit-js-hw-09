@@ -29,11 +29,7 @@ const options = {
       refs.startBtn.disabled = false;
       isCorrectDate = true;
     } else {
-      Notify.failure('Please choose a date in the future', {
-        position: 'center-center',
-        timeout: 1000,
-        pauseOnHover: false,
-      });
+      notifyFailure('Please choose a date in the future');
     }
   },
 };
@@ -48,16 +44,27 @@ refs.startBtn.addEventListener('click', onStartBtnClick);
 function onStartBtnClick() {
   console.log('Start timer');
   startTimer();
+  refs.startBtn.disabled = true;
+}
+
+//функция оповещения о выборе неправильной даты
+function notifyFailure(msg) {
+  Notify.failure(msg, {
+    position: 'center-center',
+    timeout: 1000,
+    pauseOnHover: false,
+  });
 }
 
 //функция стартует timer
 function startTimer() {
   const intervalID = setInterval(() => {
-    showTimer(convertMs(difference));
     difference -= 1000;
     if (difference < 0) {
       stopTimer(intervalID);
+      return;
     }
+    showTimer(convertMs(difference));
   }, 1000);
 }
 
