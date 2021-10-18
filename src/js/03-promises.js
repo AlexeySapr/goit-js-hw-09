@@ -10,6 +10,7 @@ const refs = {
 const notifyOptions = {
   timeout: 5000,
   pauseOnHover: false,
+  useIcon: false,
 };
 
 //слушатель событий на форме
@@ -26,11 +27,11 @@ function onFormSubmit(event) {
     let position = i;
     createPromise(position, delay)
       .then(({ position, delay }) => {
-        Notify.success(`Fulfilled promise ${position} in ${delay}ms`, notifyOptions);
+        Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`, notifyOptions);
         // console.log(`✅ Fulfilled promise ${position} in ${delay}ms`);
       })
       .catch(({ position, delay }) => {
-        Notify.failure(`Rejected promise ${position} in ${delay}ms`, notifyOptions);
+        Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`, notifyOptions);
         // console.log(`❌ Rejected promise ${position} in ${delay}ms`);
       });
     delay += delayStep;
