@@ -68,7 +68,7 @@ function startTimer() {
     difference -= 1000;
     if (difference < 0) {
       stopTimer(intervalID);
-      successMsg('Timer stopped successfully !!!))). <br/><br/> Please reload the page.');
+      successMsg('Timer stopped successfully !!!))). Please reload the page.');
       return;
     }
     showTimer(convertMs(difference));
